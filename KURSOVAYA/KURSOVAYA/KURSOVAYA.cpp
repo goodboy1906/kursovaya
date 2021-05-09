@@ -4,7 +4,9 @@
 #include <iostream>
 #include <fstream>
 #include <cstdlib>
+#include <cstdio>
 #include <windows.h>
+#include <string>
 
 class Program {
 public:
@@ -310,7 +312,7 @@ public:
 			}
 			std::cout << '\n';
 		}
-		std::cout << "Task: " << *R << "\%\n";
+		std::cout << "Task: " << *R << "%\n";
 		for (int i = 0; i < 120; i++) std::cout << "=";
 	}
 	
@@ -324,16 +326,9 @@ private:
 
 class File : public Program {
 public:
-	File() {
-		
-	}
-	~File() {
-		
-	}
 	void AddStudent() {
 		std::ofstream fout;
 		fout.open(FILEPATH, std::ios_base::app);
-		for (int i = 0; i < 120; i++) fout << "=";
 
 		Student* student = new Student;
 		student->set();
@@ -377,10 +372,650 @@ public:
 				fout << session->subject[count_row][count_column] << " - " << session->mark[count_row][count_column] << '\n';
 			}
 		}
+		for (int i = 0; i < 120; i++) fout << "=";
 		delete session;
+		fout.close();
 	}
-private:
-	
+	void FindStudent() {
+		std::ifstream fin;
+		fin.open(FILEPATH, std::ios_base::in);
+		std::string book_num, book_num_check;
+		print("Введите номер зачетной книжки >>> ");
+		std::cin >> book_num;
+		while (getline(fin, book_num_check)) {
+			if (book_num == book_num_check) {
+				break;
+			}
+		}
+		while (getline(fin, book_num_check)) {
+			print(book_num_check);
+			print("\n");
+			if (book_num_check == "========================================================================================================================") {
+				break;
+			}
+		}
+		fin.close();
+	}
+	void DeleteStudent() {
+		int num_start = 0;
+		int num_end = 0;
+		std::ifstream fin;
+		fin.open(FILEPATH, std::ios_base::in);
+		std::string book_num, book_num_check;
+		print("Введите номер зачетной книжки >>> ");
+		std::cin >> book_num;
+		while (getline(fin, book_num_check)) {
+			num_start++;
+			if (book_num == book_num_check) {
+				break;
+			}
+		}
+		num_start -= 2;
+		while (getline(fin, book_num_check)) {
+			num_end++;
+			if (book_num_check == "========================================================================================================================") {
+				break;
+			}
+		}
+		num_end += num_start;
+		fin.close();
+
+		int counter = 0;
+		std::string str;
+		std::ofstream fout;
+		std::ifstream fcopy;
+		fout.open("file_copy.txt", std::ios_base::app);
+		fcopy.open(FILEPATH, std::ios_base::in);
+		while (getline(fcopy, str)) {
+			if (counter == num_start) break;
+			fout << str << std::endl;
+			counter++;
+		}
+		while (getline(fcopy, str)) {
+			if (counter == num_end) break;
+			counter++;
+		}
+		while (getline(fcopy, str)) {
+			fout << str << std::endl;
+		}
+		fout.close();
+		fcopy.close();
+		remove(FILEPATH);
+		char oldfilename[] = "file_copy.txt";                   
+		char newfilename[] = FILEPATH;                   
+		if (rename(oldfilename, newfilename) == 0) std::cout << "Запись удалена!\n\n";
+		else std::cout << "Ошибка!\n";
+	}
+	void ChangeHub() {
+		
+		
+		std::ifstream fin;
+		fin.open(FILEPATH, std::ios_base::in);
+		std::string book_num, book_num_check;
+		print("Введите номер зачетной книжки >>> ");
+		std::cin >> book_num;
+		while (getline(fin, book_num_check)) {
+			if (book_num == book_num_check) {
+				break;
+			}
+		}
+		while (getline(fin, book_num_check)) {
+			print(book_num_check);
+			print("\n");
+			if (book_num_check == "========================================================================================================================") {
+				break;
+			}
+		}
+		fin.close();
+
+		print("\n");
+		for (int i = 0; i < 120; i++) std::cout << "=";
+		print("\n");
+
+		int* hub_arg = new int;
+		print(" [1]. - Изменить фамилию\n");
+		print(" [2]. - Изменить имя\n");
+		print(" [3]. - Изменить отчество\n");
+		print(" [4]. - Изменить дату рождения\n");
+		print(" [5]. - Изменить пол\n");
+		print(" [6]. - Изменить год поступления\n");
+		print(" [7]. - Изменить факультет\n");
+		print(" [8]. - Изменить кафедру\n");
+		print(" [9]. - Изменить группу\n");
+		print("[10]. - Изменить номер зачетной книжки\n");
+		print("[11]. - Редактировать сессию\n");
+		print("[12]. - Выйти\n\n>>> ");
+		std::cin >> *hub_arg;
+
+		Student* student = new Student;
+		switch (*hub_arg) {
+		case 1: {
+			student->set_surname();
+			int num = 0;
+			std::ifstream fin;
+			fin.open(FILEPATH, std::ios_base::in);
+			while (getline(fin, book_num_check)) {
+				num++;
+				if (book_num == book_num_check) {
+					break;
+				}
+			}
+			num += 1;
+			fin.close();
+
+			int counter = 0;
+			std::string str;
+			std::ofstream fout;
+			std::ifstream fcopy;
+			fout.open("file_copy.txt", std::ios_base::app);
+			fcopy.open(FILEPATH, std::ios_base::in);
+			while (getline(fcopy, str)) {
+				if (counter == num) break;
+				fout << str << std::endl;
+				counter++;
+			}
+			fout << student->surname << std::endl;
+			while (getline(fcopy, str)) {
+				fout << str << std::endl;
+			}
+			fout.close();
+			fcopy.close();
+			remove(FILEPATH);
+			char oldfilename[] = "file_copy.txt";
+			char newfilename[] = FILEPATH;
+			if (rename(oldfilename, newfilename) == 0) std::cout << "Фамилия изменена!\n\n";
+			else std::cout << "Ошибка!\n";
+			delete student;
+			break;
+		}	
+		case 2: {
+			student->set_name();
+			int num = 0;
+			std::ifstream fin;
+			fin.open(FILEPATH, std::ios_base::in);
+			while (getline(fin, book_num_check)) {
+				num++;
+				if (book_num == book_num_check) {
+					break;
+				}
+			}
+			num += 3;
+			fin.close();
+
+			int counter = 0;
+			std::string str;
+			std::ofstream fout;
+			std::ifstream fcopy;
+			fout.open("file_copy.txt", std::ios_base::app);
+			fcopy.open(FILEPATH, std::ios_base::in);
+			while (getline(fcopy, str)) {
+				if (counter == num) break;
+				fout << str << std::endl;
+				counter++;
+			}
+			fout << student->name << std::endl;
+			while (getline(fcopy, str)) {
+				fout << str << std::endl;
+			}
+			fout.close();
+			fcopy.close();
+			remove(FILEPATH);
+			char oldfilename[] = "file_copy.txt";
+			char newfilename[] = FILEPATH;
+			if (rename(oldfilename, newfilename) == 0) std::cout << "Имя изменено!\n\n";
+			else std::cout << "Ошибка!\n";
+			delete student;
+			break;
+		}
+		case 3: {
+			student->set_middlename();
+			int num = 0;
+			std::ifstream fin;
+			fin.open(FILEPATH, std::ios_base::in);
+			while (getline(fin, book_num_check)) {
+				num++;
+				if (book_num == book_num_check) {
+					break;
+				}
+			}
+			num += 5;
+			fin.close();
+
+			int counter = 0;
+			std::string str;
+			std::ofstream fout;
+			std::ifstream fcopy;
+			fout.open("file_copy.txt", std::ios_base::app);
+			fcopy.open(FILEPATH, std::ios_base::in);
+			while (getline(fcopy, str)) {
+				if (counter == num) break;
+				fout << str << std::endl;
+				counter++;
+			}
+			fout << student->middlename << std::endl;
+			while (getline(fcopy, str)) {
+				fout << str << std::endl;
+			}
+			fout.close();
+			fcopy.close();
+			remove(FILEPATH);
+			char oldfilename[] = "file_copy.txt";
+			char newfilename[] = FILEPATH;
+			if (rename(oldfilename, newfilename) == 0) std::cout << "Отчество изменено!\n\n";
+			else std::cout << "Ошибка!\n";
+			delete student;
+			break;
+		}
+		case 4: {
+			student->set_birth();
+			int num = 0;
+			std::ifstream fin;
+			fin.open(FILEPATH, std::ios_base::in);
+			while (getline(fin, book_num_check)) {
+				num++;
+				if (book_num == book_num_check) {
+					break;
+				}
+			}
+			num += 7;
+			fin.close();
+
+			int counter = 0;
+			std::string str;
+			std::ofstream fout;
+			std::ifstream fcopy;
+			fout.open("file_copy.txt", std::ios_base::app);
+			fcopy.open(FILEPATH, std::ios_base::in);
+			while (getline(fcopy, str)) {
+				if (counter == num) break;
+				fout << str << std::endl;
+				counter++;
+			}
+			fout << *student->day << std::endl;
+			while (getline(fcopy, str)) {
+				fout << str << std::endl;
+			}
+			fout.close();
+			fcopy.close();
+			remove(FILEPATH);
+			char oldfilename[] = "file_copy.txt";
+			char newfilename[] = FILEPATH;
+			if (rename(oldfilename, newfilename) == 0) std::cout << "";
+			else std::cout << "Ошибка!\n";
+			
+			num = 0;
+			std::ifstream _fin;
+			_fin.open(FILEPATH, std::ios_base::in);
+			while (getline(_fin, book_num_check)) {
+				num++;
+				if (book_num == book_num_check) {
+					break;
+				}
+			}
+			num += 9;
+			_fin.close();
+
+			counter = 0;
+			std::string _str;
+			std::ofstream _fout;
+			std::ifstream _fcopy;
+			_fout.open("file_copy.txt", std::ios_base::app);
+			_fcopy.open(FILEPATH, std::ios_base::in);
+			while (getline(_fcopy, _str)) {
+				if (counter == num) break;
+				_fout << _str << std::endl;
+				counter++;
+			}
+			_fout << *student->month << std::endl;
+			while (getline(_fcopy, _str)) {
+				_fout << _str << std::endl;
+			}
+			_fout.close();
+			_fcopy.close();
+			remove(FILEPATH);
+			char _oldfilename[] = "file_copy.txt";
+			char _newfilename[] = FILEPATH;
+			if (rename(_oldfilename, _newfilename) == 0) std::cout << "";
+			else std::cout << "Ошибка!\n";
+
+			num = 0;
+			std::ifstream __fin;
+			__fin.open(FILEPATH, std::ios_base::in);
+			while (getline(__fin, book_num_check)) {
+				num++;
+				if (book_num == book_num_check) {
+					break;
+				}
+			}
+			num += 11;
+			__fin.close();
+
+			counter = 0;
+			std::string __str;
+			std::ofstream __fout;
+			std::ifstream __fcopy;
+			__fout.open("file_copy.txt", std::ios_base::app);
+			__fcopy.open(FILEPATH, std::ios_base::in);
+			while (getline(__fcopy, __str)) {
+				if (counter == num) break;
+				__fout << __str << std::endl;
+				counter++;
+			}
+			__fout << *student->year << std::endl;
+			while (getline(__fcopy, __str)) {
+				__fout << __str << std::endl;
+			}
+			__fout.close();
+			__fcopy.close();
+			remove(FILEPATH);
+			char __oldfilename[] = "file_copy.txt";
+			char __newfilename[] = FILEPATH;
+			if (rename(__oldfilename, __newfilename) == 0) std::cout << "Дата рождения изменена!\n\n";
+			else std::cout << "Ошибка!\n";
+			delete student;
+			break;
+		}
+		case 5: {
+			student->set_gender();
+			int num = 0;
+			std::ifstream fin;
+			fin.open(FILEPATH, std::ios_base::in);
+			while (getline(fin, book_num_check)) {
+				num++;
+				if (book_num == book_num_check) {
+					break;
+				}
+			}
+			num += 13;
+			fin.close();
+
+			int counter = 0;
+			std::string str;
+			std::ofstream fout;
+			std::ifstream fcopy;
+			fout.open("file_copy.txt", std::ios_base::app);
+			fcopy.open(FILEPATH, std::ios_base::in);
+			while (getline(fcopy, str)) {
+				if (counter == num) break;
+				fout << str << std::endl;
+				counter++;
+			}
+			fout << student->gender << std::endl;
+			while (getline(fcopy, str)) {
+				fout << str << std::endl;
+			}
+			fout.close();
+			fcopy.close();
+			remove(FILEPATH);
+			char oldfilename[] = "file_copy.txt";
+			char newfilename[] = FILEPATH;
+			if (rename(oldfilename, newfilename) == 0) std::cout << "Пол изменен!\n\n";
+			else std::cout << "Ошибка!\n";
+			delete student;
+			break;
+		}
+		case 6: {
+			student->set_year_entrance();
+			int num = 0;
+			std::ifstream fin;
+			fin.open(FILEPATH, std::ios_base::in);
+			while (getline(fin, book_num_check)) {
+				num++;
+				if (book_num == book_num_check) {
+					break;
+				}
+			}
+			num += 15;
+			fin.close();
+
+			int counter = 0;
+			std::string str;
+			std::ofstream fout;
+			std::ifstream fcopy;
+			fout.open("file_copy.txt", std::ios_base::app);
+			fcopy.open(FILEPATH, std::ios_base::in);
+			while (getline(fcopy, str)) {
+				if (counter == num) break;
+				fout << str << std::endl;
+				counter++;
+			}
+			fout << *student->year_entrance << std::endl;
+			while (getline(fcopy, str)) {
+				fout << str << std::endl;
+			}
+			fout.close();
+			fcopy.close();
+			remove(FILEPATH);
+			char oldfilename[] = "file_copy.txt";
+			char newfilename[] = FILEPATH;
+			if (rename(oldfilename, newfilename) == 0) std::cout << "Год поступления изменен!\n\n";
+			else std::cout << "Ошибка!\n";
+			delete student;
+			break;
+		}
+		case 7: {
+			student->set_faculty();
+			int num = 0;
+			std::ifstream fin;
+			fin.open(FILEPATH, std::ios_base::in);
+			while (getline(fin, book_num_check)) {
+				num++;
+				if (book_num == book_num_check) {
+					break;
+				}
+			}
+			num += 17;
+			fin.close();
+
+			int counter = 0;
+			std::string str;
+			std::ofstream fout;
+			std::ifstream fcopy;
+			fout.open("file_copy.txt", std::ios_base::app);
+			fcopy.open(FILEPATH, std::ios_base::in);
+			while (getline(fcopy, str)) {
+				if (counter == num) break;
+				fout << str << std::endl;
+				counter++;
+			}
+			fout << student->faculty << std::endl;
+			while (getline(fcopy, str)) {
+				fout << str << std::endl;
+			}
+			fout.close();
+			fcopy.close();
+			remove(FILEPATH);
+			char oldfilename[] = "file_copy.txt";
+			char newfilename[] = FILEPATH;
+			if (rename(oldfilename, newfilename) == 0) std::cout << "Факультет изменен!\n\n";
+			else std::cout << "Ошибка!\n";
+			delete student;
+			break;
+		}
+		case 8: {
+			student->set_department();
+			int num = 0;
+			std::ifstream fin;
+			fin.open(FILEPATH, std::ios_base::in);
+			while (getline(fin, book_num_check)) {
+				num++;
+				if (book_num == book_num_check) {
+					break;
+				}
+			}
+			num += 19;
+			fin.close();
+
+			int counter = 0;
+			std::string str;
+			std::ofstream fout;
+			std::ifstream fcopy;
+			fout.open("file_copy.txt", std::ios_base::app);
+			fcopy.open(FILEPATH, std::ios_base::in);
+			while (getline(fcopy, str)) {
+				if (counter == num) break;
+				fout << str << std::endl;
+				counter++;
+			}
+			fout << student->department << std::endl;
+			while (getline(fcopy, str)) {
+				fout << str << std::endl;
+			}
+			fout.close();
+			fcopy.close();
+			remove(FILEPATH);
+			char oldfilename[] = "file_copy.txt";
+			char newfilename[] = FILEPATH;
+			if (rename(oldfilename, newfilename) == 0) std::cout << "Кафедра изменена!\n\n";
+			else std::cout << "Ошибка!\n";
+			delete student;
+			break;
+		}
+		case 9: {
+			student->set_group();
+			int num = 0;
+			std::ifstream fin;
+			fin.open(FILEPATH, std::ios_base::in);
+			while (getline(fin, book_num_check)) {
+				num++;
+				if (book_num == book_num_check) {
+					break;
+				}
+			}
+			num += 21;
+			fin.close();
+
+			int counter = 0;
+			std::string str;
+			std::ofstream fout;
+			std::ifstream fcopy;
+			fout.open("file_copy.txt", std::ios_base::app);
+			fcopy.open(FILEPATH, std::ios_base::in);
+			while (getline(fcopy, str)) {
+				if (counter == num) break;
+				fout << str << std::endl;
+				counter++;
+			}
+			fout << student->group << std::endl;
+			while (getline(fcopy, str)) {
+				fout << str << std::endl;
+			}
+			fout.close();
+			fcopy.close();
+			remove(FILEPATH);
+			char oldfilename[] = "file_copy.txt";
+			char newfilename[] = FILEPATH;
+			if (rename(oldfilename, newfilename) == 0) std::cout << "Группа изменена!\n\n";
+			else std::cout << "Ошибка!\n";
+			delete student;
+			break;
+		}
+		case 10: {
+			student->set_student_status();
+			int num = 0;
+			std::ifstream fin;
+			fin.open(FILEPATH, std::ios_base::in);
+			while (getline(fin, book_num_check)) {
+				num++;
+				if (book_num == book_num_check) {
+					break;
+				}
+			}
+			num -= 1;
+			fin.close();
+
+			int counter = 0;
+			std::string str;
+			std::ofstream fout;
+			std::ifstream fcopy;
+			fout.open("file_copy.txt", std::ios_base::app);
+			fcopy.open(FILEPATH, std::ios_base::in);
+			while (getline(fcopy, str)) {
+				if (counter == num) break;
+				fout << str << std::endl;
+				counter++;
+			}
+			fout << student->student_status << std::endl;
+			while (getline(fcopy, str)) {
+				fout << str << std::endl;
+			}
+			fout.close();
+			fcopy.close();
+			remove(FILEPATH);
+			char oldfilename[] = "file_copy.txt";
+			char newfilename[] = FILEPATH;
+			if (rename(oldfilename, newfilename) == 0) std::cout << "Номер зачетной книжки изменен!\n\n";
+			else std::cout << "Ошибка!\n";
+			delete student;
+			break;
+		}
+		case 11: {
+			delete student;
+			Session* session = new Session;
+			session->set();
+			session->get();
+			int num = 0;
+			int num_end = 0;
+			std::ifstream fin;
+			fin.open(FILEPATH, std::ios_base::in);
+			while (getline(fin, book_num_check)) {
+				num++;
+				if (book_num == book_num_check) {
+					break;
+				}
+			}
+			num += 22;
+			fin.close();
+
+			int counter = 0;
+			std::string str;
+			std::ofstream fout;
+			std::ifstream fcopy;
+			fout.open("file_copy.txt", std::ios_base::app);
+			fcopy.open(FILEPATH, std::ios_base::in);
+			while (getline(fcopy, str)) {
+				if (counter == num) break;
+				fout << str << std::endl;
+				counter++;
+			}
+			while (getline(fcopy, str)) {
+				if (str == "========================================================================================================================") {
+					fout << "TASK:\n";
+					fout << *session->R;
+					fout << "\nСЕССИЯ:\n";
+					for (int count_row = 0; count_row < *session->session_counter; count_row++) {
+						fout << count_row + 1 << "_СЕМЕСТР:\n";
+						for (int count_column = 0; count_column < *session->subject_counter; count_column++) {
+							fout << session->subject[count_row][count_column] << " - " << session->mark[count_row][count_column] << '\n';
+						}
+					}
+					fout << "========================================================================================================================\n";
+					while (getline(fcopy, str)) {
+						fout << str << std::endl;
+					}
+					break;
+				}
+			}
+			fout.close();
+			fcopy.close();
+			remove(FILEPATH);
+			char oldfilename[] = "file_copy.txt";
+			char newfilename[] = FILEPATH;
+			if (rename(oldfilename, newfilename) == 0) std::cout << "Сессия отредактирована!\n\n";
+			else std::cout << "Ошибка!\n";
+			delete session;
+			break;
+		}
+		case 12: {
+			delete student;
+			break;
+		}
+		default:
+			system("cls");
+			ChangeHub();
+		}
+		return;
+	}
 };
 
 class Menu : Program {
@@ -400,10 +1035,9 @@ public:
 		std::cout << "[1]. - Добавить студента\n";
 		std::cout << "[2]. - Найти студента\n";
 		std::cout << "[3]. - Удалить студента\n";
-		std::cout << "[4]. - Редактировать запись о студенте\n";
+		std::cout << "[4]. - Изменить запись о студенте\n";
 		std::cout << "[5]. - Выполнить задание\n";
-		std::cout << "[6]. - Выйти\n\n";
-		std::cout << ">>> ";
+		std::cout << "[6]. - Выйти\n\n>>> ";
 
 		std::cin >> *menu_arg;
 		switch (*menu_arg){
@@ -414,17 +1048,41 @@ public:
 			system("pause");
 			system("cls");
 			hub();
+			break;
 		}
-		case 2:
+		case 2: {
+			File* file = new File;
+			file->FindStudent();
+			delete file;
+			system("pause");
+			system("cls");
+			hub();
+			break;
+		}
+		case 3: {
+			File* file = new File;
+			file->DeleteStudent();
+			delete file;
+			system("pause");
+			system("cls");
+			hub();
+			break;
+		}
+		case 4: {
+			File* file = new File;
+			file->ChangeHub();
+			delete file;
+			system("pause");
+			system("cls");
+			hub();
+			break;
+		}
+		case 5: {
 
-		case 3:
-
-		case 4:
-
-		case 5:
-
-		case 6:
+		}
+		case 6: {
 			return;
+		}
 		default:
 			system("cls");
 			hub();
