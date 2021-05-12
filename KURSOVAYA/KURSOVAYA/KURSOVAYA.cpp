@@ -1,5 +1,6 @@
 ﻿#define _CRT_SECURE_NO_WARNINGS
 #define FILEPATH "file.txt"
+#define NUMPATH "num.txt"
 
 #include <iostream>
 #include <fstream>
@@ -18,6 +19,30 @@ public:
 	}
 	void print(std::string a) {
 		std::cout << a;
+	}
+	void AddNum(std::string str) {
+		std::ofstream fout;
+		fout.open(NUMPATH, std::ios_base::app);
+		fout << str << std::endl;
+	}
+	bool CheckNum(std::string str) {
+		std::ifstream fin;
+		std::string book_num_check;
+		fin.open(NUMPATH);
+		while (getline(fin, book_num_check)) {
+			if (str == book_num_check) {
+				fin.close();
+				return 1;
+			}
+		}
+		return 0;
+	}
+	virtual bool Check(std::string str) {
+		if (CheckNum(str)) {
+			print("\n\nИмя недоступно!\n\n");
+			return 1;
+		}
+		return 0;
 	}
 };
 
@@ -66,7 +91,7 @@ public:
 	}
 	void set_surname() {
 		print("Введите фамилию [30] >>> ");
-		std::cin >> surname;
+		std::cin.get(surname, 31);
 		std::cin.clear();
 	}
 	void set_name() {
@@ -1016,6 +1041,76 @@ public:
 		}
 		return;
 	}
+	void Task() {
+		int year_start;
+		int year_end;
+		int count = 0;
+		int l = 0;
+		int m = 0;
+		float tmp;
+		float arr_task[100] = { 0 };
+		std::string _tmp;
+		std::string arr_num[100];
+		std::string num_check;
+		print("\n");
+		print("Введите диапазон года рождения (YEAR1 - YEAR2)\n\nYEAR1: ");
+		std::cin >> year_start;
+		print("YEAR2: ");
+		std::cin >> year_end;
+		print("\n");
+		std::ifstream fin;
+		std::string task;
+		std::string year;
+		fin.open(FILEPATH, std::ios_base::in);
+		while (getline(fin, year)) {
+			if (year == "ГОД:") {
+				getline(fin, year);
+				count++;
+				if (std::stoi(year) >= year_start && std::stoi(year) <= year_end) {
+					while (getline(fin, task)) {
+						if (task == "TASK:") {
+							getline(fin, task);
+							count++;
+							arr_task[l] = stof(task);
+							std::ifstream fin_num;
+							fin_num.open(FILEPATH, std::ios_base::in);
+							while (getline(fin_num, num_check)) {
+								if (m == (count - 23)) {
+									arr_num[l] = num_check;
+									break;
+								}
+								m++;
+							}
+							m = 0;
+							l++;
+							count++;
+							fin_num.close();
+							break;
+						}
+						count++;
+					}
+				}
+			}
+			count++;
+		}
+		for (int i = 0; i < 100 - 1; ++i) {
+			for (int j = 0; j < 100 - 1; ++j) {
+				if (arr_task[j + 1] > arr_task[j]) {
+					tmp = arr_task[j + 1];
+					arr_task[j + 1] = arr_task[j];
+					arr_task[j] = tmp;
+					_tmp = arr_num[j + 1];
+					arr_num[j + 1] = arr_num[j];
+					arr_num[j] = _tmp;
+				}
+			}
+		}
+		for (int i = 0; i < l; ++i) {
+			std::cout << i + 1 << ". " << arr_num[i] << " - " << arr_task[i] << "%" << std::endl;
+		}
+		fin.close();
+		print("\n");
+	}
 };
 
 class Menu : Program {
@@ -1078,7 +1173,13 @@ public:
 			break;
 		}
 		case 5: {
-
+			File* file = new File;
+			file->Task();
+			delete file;
+			system("pause");
+			system("cls");
+			hub();
+			break;
 		}
 		case 6: {
 			return;
