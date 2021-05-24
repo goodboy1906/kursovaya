@@ -25,7 +25,7 @@ public:
 		fout.open(NUMPATH, std::ios_base::app);
 		fout << str << std::endl;
 	}
-	bool CheckNum(std::string str) {
+	virtual bool CheckNum(std::string str) {
 		std::ifstream fin;
 		std::string book_num_check;
 		fin.open(NUMPATH);
@@ -34,13 +34,6 @@ public:
 				fin.close();
 				return 1;
 			}
-		}
-		return 0;
-	}
-	virtual bool Check(std::string str) {
-		if (CheckNum(str)) {
-			print("\n\nИмя недоступно!\n\n");
-			return 1;
 		}
 		return 0;
 	}
@@ -91,25 +84,76 @@ public:
 	}
 	void set_surname() {
 		print("Введите фамилию [30] >>> ");
-		std::cin.get(surname, 31);
+		std::cin >> surname;
+		if (sizeof(surname) > 30) { print("Больше 30 символов!\n\n"); set_surname(); }
+		if (CheckNum(surname)) {
+			print("Фамилия недоступна!\n\n");
+			set_surname();
+		}
 		std::cin.clear();
 	}
 	void set_name() {
 		print("Введите имя [30] >>> ");
 		std::cin >> name;
+		if (sizeof(name) > 30) { print("Больше 30 символов!\n\n"); set_surname(); }
+		if (CheckNum(name)) {
+			print("Имя недоступно!\n\n");
+			set_name();
+		}
 		std::cin.clear();
 	}
 	void set_middlename() {
 		print("Введите отчество [30] >>> ");
 		std::cin >> middlename;
+		if (sizeof(middlename) > 30) { print("Больше 30 символов!\n\n"); set_surname(); }
+		if (CheckNum(middlename)) {
+			print("Отчество недоступно!\n\n");
+			set_middlename();
+		}
 		std::cin.clear();
 	}
 	void set_birth() {
-		print("Введите дату рождения (dd mm yyyy) >>> ");
+		std::cout << "Введите день рождения [1-31] >>> ";
 		std::cin >> *day;
+		while (std::cin.fail())
+		{
+			std::cin.clear();
+			std::cin.ignore(256, '\n');
+			std::cin >> *day;
+		}
+		if ((*day > 31) || (*day < 1)) {
+			print("Вы ввели некорректные данные :(\n");
+			*day = 0;
+			*month = 0;
+			*year = 0;
+			std::cin.clear();
+			set_birth();
+		}
+		std::cout << "Введите месяц рождения [1-12] >>> ";
 		std::cin >> *month;
+		while (std::cin.fail())
+		{
+			std::cin.clear();
+			std::cin.ignore(256, '\n');
+			std::cin >> *month;
+		}
+		if ((*month > 12) || (*month < 1)) {
+			print("Вы ввели некорректные данные :(\n");
+			*day = 0;
+			*month = 0;
+			*year = 0;
+			std::cin.clear();
+			set_birth();
+		}
+		std::cout << "Введите год рождения [1900-2004] >>> ";
 		std::cin >> *year;
-		if ((*day > 31) || (*day < 1) || (*month > 12) || (*month < 1) || (*year > 2004) || (*year < 1900)) {
+		while (std::cin.fail())
+		{
+			std::cin.clear();
+			std::cin.ignore(256, '\n');
+			std::cin >> *year;
+		}
+		if ((*year > 2004) || (*year < 1900)) {
 			print("Вы ввели некорректные данные :(\n");
 			*day = 0;
 			*month = 0;
@@ -132,6 +176,12 @@ public:
 	void set_year_entrance() {
 		print("Введите год поступления (yyyy) >>> ");
 		std::cin >> *year_entrance;
+		while (std::cin.fail())
+		{
+			std::cin.clear();
+			std::cin.ignore(256, '\n');
+			std::cin >> *year_entrance;
+		}
 		if (*year_entrance < *year) {
 			print("Год поступления не может быть меньше года рождения!\n");
 			*year_entrance = 0;
@@ -143,21 +193,45 @@ public:
 	void set_faculty() {
 		print("Введите факультет [30] >>> ");
 		std::cin >> faculty;
+		if (sizeof(faculty) > 30) { print("Больше 30 символов!\n\n"); set_surname(); }
+		if (CheckNum(faculty)) {
+			print("Некорректное!\n\n");
+			set_faculty();
+		}
 		std::cin.clear();
 	}
 	void set_department() {
 		print("Введите кафедру [30] >>> ");
 		std::cin >> department;
+		if (sizeof(department) > 30) { print("Больше 30 символов!\n\n"); set_surname(); }
+		if (CheckNum(department)) {
+			print("Название недоступно!\n\n");
+			set_department();
+		}
 		std::cin.clear();
 	}
 	void set_group() {
 		print("Введите группу [30] >>> ");
 		std::cin >> group;
+		if (sizeof(group) > 30) { print("Больше 30 символов!\n\n"); set_surname(); }
+		if (CheckNum(group)) {
+			print("Название недоступно!\n\n");
+			set_group();
+		}
 		std::cin.clear();
 	}
 	void set_student_status() {
 		print("Введите номер зачетной книжки [30] >>> ");
 		std::cin >> student_status;
+		if (sizeof(student_status) > 30) { print("Больше 30 символов!\n\n"); set_surname(); }
+		if (CheckNum(student_status)) { 
+			print("Номер недоступен!\n\n");
+			set_student_status();
+		}
+		std::ofstream fout;
+		fout.open(NUMPATH, std::ios_base::app);
+		fout << std::endl << student_status;
+		fout.close();
 		std::cin.clear();
 	}
 	void get() {
@@ -188,7 +262,10 @@ public:
 	}
 	void get_birth() {
 		print("Дата рождения: ");
-		std::cout << *day << '.' << *month << '.' << *year << std::endl;
+		if (*day < 10) std::cout << "0";
+		std::cout << *day << '.';
+		if (*month < 10) std::cout << "0";
+		std::cout << *month << '.' << *year << std::endl;
 	}
 	void get_gender() {
 		print("Пол: ");
@@ -259,8 +336,14 @@ public:
 	void set_session_counter() {
 		print("Введите количество сессий (2 - 9) >>> ");
 		std::cin >> *session_counter;
+		while (std::cin.fail())
+		{
+			std::cin.clear();
+			std::cin.ignore(256, '\n');
+			std::cin >> *session_counter;
+		}
 		if (*session_counter > 9 || *session_counter < 2) {
-			print("Введите корректные данные!");
+			print("\nВведите корректные данные!");
 			std::cin.clear();
 			set_session_counter();
 		}
@@ -270,8 +353,14 @@ public:
 		print("Введите количество предметов в ");
 		print("сессии (1 - 10) >>> ");
 		std::cin >> *subject_counter;
+		while (std::cin.fail())
+		{
+			std::cin.clear();
+			std::cin.ignore(256, '\n');
+			std::cin >> *subject_counter;
+		}
 		if (*subject_counter > 10 || *subject_counter < 1) {
-			print("Введите корректные данные!");
+			print("\nВведите корректные данные!");
 			std::cin.clear();
 			set_subject_counter();
 		}
@@ -297,7 +386,12 @@ public:
 				do {
 					std::cout << "Введите оценку " << count_column + 1 << "-го предмета " << count_row + 1 << "-й сессии (2 - 5) >>> ";
 					std::cin >> mark[count_row][count_column];
-
+					while (std::cin.fail())
+					{
+						std::cin.clear();
+						std::cin.ignore(256, '\n');
+						std::cin >> mark[count_row][count_column];
+					}
 					if (mark[count_row][count_column] != 5 && mark[count_row][count_column] != 4 && mark[count_row][count_column] != 3 && mark[count_row][count_column] != 2) {
 						print("Такой оценки нет!\n");
 						std::cin.sync();
@@ -351,6 +445,18 @@ private:
 
 class File : public Program {
 public:
+	virtual bool CheckNum(std::string str) {
+		std::ifstream fin;
+		std::string book_num_check;
+		fin.open(NUMPATH);
+		while (getline(fin, book_num_check)) {
+			if (str == book_num_check) {
+				fin.close();
+				return 0;
+			}
+		}
+		return 1;
+	}
 	void AddStudent() {
 		std::ofstream fout;
 		fout.open(FILEPATH, std::ios_base::app);
@@ -368,8 +474,10 @@ public:
 		fout << "\nОТЧЕСТВО:\n";
 		fout << student->middlename;
 		fout << "\nДЕНЬ:\n";
+		if (*student->day < 10) fout << "0";
 		fout << *student->day;
 		fout << "\nМЕСЯЦ:\n";
+		if (*student->month < 10) fout << "0";
 		fout << *student->month;
 		fout << "\nГОД:\n";
 		fout << *student->year;
@@ -407,6 +515,10 @@ public:
 		std::string book_num, book_num_check;
 		print("Введите номер зачетной книжки >>> ");
 		std::cin >> book_num;
+		if (CheckNum(book_num)) {
+			print("Студент не найден!\n\n>>> ");
+			FindStudent();
+		}
 		while (getline(fin, book_num_check)) {
 			if (book_num == book_num_check) {
 				break;
@@ -429,6 +541,10 @@ public:
 		std::string book_num, book_num_check;
 		print("Введите номер зачетной книжки >>> ");
 		std::cin >> book_num;
+		if (CheckNum(book_num)) {
+			print("Студент не найден!\n\n>>> ");
+			DeleteStudent();
+		}
 		while (getline(fin, book_num_check)) {
 			num_start++;
 			if (book_num == book_num_check) {
@@ -470,6 +586,23 @@ public:
 		char newfilename[] = FILEPATH;                   
 		if (rename(oldfilename, newfilename) == 0) std::cout << "Запись удалена!\n\n";
 		else std::cout << "Ошибка!\n";
+		
+		std::ofstream delete_num;
+		std::string _str;
+		delete_num.open("file_copy.txt", std::ios_base::app);
+		std::ifstream copy_num;
+		copy_num.open(NUMPATH, std::ios_base::in);
+		while (getline(copy_num, _str)) {
+			if (_str == book_num) continue;
+			delete_num << _str << std::endl;
+		}
+		delete_num.close();
+		copy_num.close();
+		remove(NUMPATH);
+		char _oldfilename[] = "file_copy.txt";
+		char _newfilename[] = NUMPATH;
+		if (rename(_oldfilename, _newfilename) == 0) std::cout << "";
+		else std::cout << "Ошибка!\n";
 	}
 	void ChangeHub() {
 		
@@ -479,6 +612,10 @@ public:
 		std::string book_num, book_num_check;
 		print("Введите номер зачетной книжки >>> ");
 		std::cin >> book_num;
+		if (CheckNum(book_num)) {
+			print("Студент не найден!\n\n>>> ");
+			ChangeHub();
+		}
 		while (getline(fin, book_num_check)) {
 			if (book_num == book_num_check) {
 				break;
@@ -1055,8 +1192,20 @@ public:
 		print("\n");
 		print("Введите диапазон года рождения (YEAR1 - YEAR2)\n\nYEAR1: ");
 		std::cin >> year_start;
+		while (std::cin.fail())
+		{
+			std::cin.clear();
+			std::cin.ignore(256, '\n');
+			std::cin >> year_start;
+		}
 		print("YEAR2: ");
 		std::cin >> year_end;
+		while (std::cin.fail())
+		{
+			std::cin.clear();
+			std::cin.ignore(256, '\n');
+			std::cin >> year_end;
+		}
 		print("\n");
 		std::ifstream fin;
 		std::string task;
@@ -1112,6 +1261,7 @@ public:
 		print("\n");
 	}
 };
+
 
 class Menu : Program {
 public:
